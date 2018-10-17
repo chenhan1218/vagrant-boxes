@@ -60,6 +60,8 @@ Vagrant.configure("2") do |config|
 
     # Set a prefix for the machines that's different than the project dir name.
     #libvirt.default_prefix = ''
+    libvirt.video_type = "qxl"
+    libvirt.memory = "1024"
   end
 end
 
