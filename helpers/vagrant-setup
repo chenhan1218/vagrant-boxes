@@ -32,6 +32,7 @@ echo 'debconf debconf/frontend select Noninteractive' | \
 printf '#!/bin/sh\nexit 101\n' > $fs/usr/sbin/policy-rc.d
 chmod +x $fs/usr/sbin/policy-rc.d
 echo 'Acquire::Languages "none";' > $fs/etc/apt/apt.conf.d/99translations
+mount --bind /proc $fs/proc
 chroot $fs apt-get update
 chroot $fs apt-get -qy dist-upgrade
 
@@ -61,6 +62,7 @@ chroot $fs chown -R vagrant:vagrant /home/vagrant/.ssh
 # setup passwordless sudo for vagrant user
 #######################################################################
 chroot $fs apt-get install -qy sudo
+chroot $fs apt-get install -qy task-gnome-desktop
 cat > $fs/etc/sudoers.d/vagrant <<EOF
 vagrant ALL=(ALL) NOPASSWD:ALL
 EOF
@@ -99,6 +101,8 @@ chroot $fs apt-get clean
 rm -f $fs/usr/sbin/policy-rc.d
 echo 'debconf debconf/frontend select Dialog' | \
     chroot $fs debconf-set-selections
+
+umount $fs/proc
 
 # make sure /etc/machine-id is generated on next book
 # /etc/machine-id needs to be unique so multiple systemd-networkd dhcp clients
